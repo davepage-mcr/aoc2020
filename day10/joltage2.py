@@ -21,33 +21,19 @@ paths = [0]
 target = max(adapters) + 3
 print("Our target joltage is", target)
 
-def indent( gen ):
-    return("{:2d} {}".format(gen, '#' * gen))
-
-def buildpath( dest, adapused, adapleft ):
-    gen = len(adapused)
-    start = adapused[-1]
-    if args.debug:
-        print(indent(gen), "Building from", start, adapused, "to", dest, "using", adapleft)
-
-    if start + 3 == dest:
-        if args.debug:
-            print(indent(gen), "Complete path", adapused) 
+def buildpath( start, gen, startpos ):
+    if start + 3 == target:
         paths[0] += 1
         return
 
-    # Check the next 3 adapters in adapleft to see if we can connect to them
-    for i in range( min(3, len(adapleft) ) ):
-        if adapleft[i] <= start + 3:
-            if args.debug:
-                print(indent(gen), "We can connect from", start, "to", adapleft[i])
-            nadapused = adapused.copy()
-            nadapused.append( adapleft[i] )
-
-            nadapleft = adapleft.copy()
-            buildpath( dest, nadapused, nadapleft[i+1:] )
+    # Check the next 3 adapters to see if we can connect to them
+    for i in range( startpos, startpos + 3):
+        if i >= len(adapters):
+            break
+        if adapters[i] <= start + 3:
+            buildpath( adapters[i], gen+1, i+1 )
     return
 
-buildpath(target, [0], adapters)
+buildpath(0, 0, 0)
 
 print(paths[0])
